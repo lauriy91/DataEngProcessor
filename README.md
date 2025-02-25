@@ -35,6 +35,8 @@ The goal of this project is to build a simple sales dashboard application. The a
 - Pandas
 - SQLAlchemy
 - SQLite
+- Polars
+- PySpark
 
 ## Endpoints
 

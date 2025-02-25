@@ -1,6 +1,4 @@
-import pandas as pd
-import os
-from io import StringIO
+import polars as pl
 
 data = """transaction_id,date,category,product,quantity,price
 1,2024-07-01,Widget,Widget-A,10,9.99
@@ -55,11 +53,6 @@ data = """transaction_id,date,category,product,quantity,price
 50,2024-07-25,Gadget,Gadget-Y,8,19.99
 """
 
-output_folder = "etl_processor/data"
-os.makedirs(output_folder, exist_ok=True)
-
-df = pd.read_csv(StringIO(data))
-output_file = os.path.join(output_folder, "data_sales.csv")
-df.to_csv(output_file, index=False)
-
-print(f"Archivo CSV creado: {output_file}")
+df = pl.read_csv(data.encode(), separator=",")
+output_file = df.write_csv("etl_processor/data/data_sales_big_data.csv")
+print(f"Csv file created: {output_file}")
