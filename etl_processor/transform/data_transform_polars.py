@@ -11,4 +11,6 @@ df = df.with_columns([
 ])
 
 # Save the tranformed file
-df.write_csv("etl_processor/data/transformed_data2.csv")
+data_trasnformed = "transformed_data.csv"
+df.write_csv(f"etl_processor/data/{data_trasnformed}")
+print(f"data transformed and saved as: {data_trasnformed}")
