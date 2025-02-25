@@ -1,6 +1,6 @@
 import polars as pl
 
-df = pl.read_csv("etl_processor/data/transformed_data.csv")
+df = pl.read_csv("sales_dashboard_app/data/transformed_data.csv")
 
 # Group data by category and calculate
 category_group = df.group_by("category").agg([
@@ -22,5 +22,5 @@ df = df.with_columns((standar_quantity.abs() > 2 * pl.col("std_quantity")).alias
 
 # Save the transformed file
 data_trasnformed = "transformed_complex_data.csv"
-df.write_csv(f"etl_processor/data/{data_trasnformed}")
+df.write_csv(f"sales_dashboard_app/data/{data_trasnformed}")
 print(f"data transformed and saved as: {data_trasnformed}")
