@@ -5,6 +5,8 @@ The goal of this project is to build a simple sales dashboard application. The a
 ## Technical Specifications
 - Programming Language: Python
 - Database: SQLite
+- ORM: sqlAlchemy
+- Dashboard: Dash
 - Libraries:
   - pandas and porlas for data manipulation
   - sqlalchemy for database interactions
@@ -46,6 +48,11 @@ The goal of this project is to build a simple sales dashboard application. The a
 - GET /sales/outliers
 
 ## Deliverables
+
+## How runs the project
+- cd sales_dashboard_app
+- venv\Scripts\activate
+- uvicorn main:app --reload
 
 A Python script for data processing.
 A RESTful API built with FastAPI.

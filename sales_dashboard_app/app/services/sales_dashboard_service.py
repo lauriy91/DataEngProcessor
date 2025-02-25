@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import date
-from database_config.models import Transactions, CategoryMetrics
+from database_config.models import Transactions, CategoryMetrics, Outliers
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class SalesDashboardService:
@@ -9,60 +10,72 @@ class SalesDashboardService:
     def get_sales_by_product_service(
         db: Session, product: str = None, category: str = None
     ):
-        query = db.query(
-            Transactions.product,
-            func.sum(Transactions.total_sales).label("total_sales"),
-            func.sum(Transactions.total_revenue).label("total_revenue"),
-            func.avg(Transactions.average_price).label("average_price"),
-        ).group_by(Transactions.product)
+        try:
+            query = db.query(
+                Transactions.product,
+                func.sum(Transactions.total_sales).label("total_sales"),
+                func.sum(Transactions.total_revenue).label("total_revenue"),
+                func.avg(Transactions.average_price).label("average_price"),
+            ).group_by(Transactions.product)
 
-        if product:
-            query = query.filter(Transactions.product == product)
-        if category:
-            query = query.filter(Transactions.category == category)
+            if product:
+                query = query.filter(Transactions.product == product)
+            if category:
+                query = query.filter(Transactions.category == category)
 
-        results = query.all()
+            products = query.all()
 
-        # Convert results to list of dictionaries
-        return [
-            {
-                "product": row[0],
-                "total_sales": row[1],
-                "total_revenue": row[2],
-                "average_price": row[3],
-            }
-            for row in results
-        ]
+            return [
+                {
+                    "product": product[0],
+                    "total_sales": product[1],
+                    "total_revenue": product[2],
+                    "average_price": product[3],
+                }
+                for product in products
+            ]
+        except SQLAlchemyError as e:
+            return {"error": f"Error fetching sales by product: {str(e)}"}
 
     @staticmethod
     def get_total_sales_by_day(
         db: Session, start_date: date = None, end_date: date = None
     ):
-        query = db.query(
-            Transactions.date,
-            func.sum(Transactions.total_sales).label("total_sales"),
-            func.sum(Transactions.total_revenue).label("total_revenue"),
-        ).group_by(Transactions.date)
+        try:
+            query = db.query(
+                Transactions.date,
+                func.sum(Transactions.total_sales).label("total_sales"),
+                func.sum(Transactions.total_revenue).label("total_revenue"),
+            ).group_by(Transactions.date)
 
-        if start_date:
-            query = query.filter(Transactions.date >= start_date)
-        if end_date:
-            query = query.filter(Transactions.date <= end_date)
+            if start_date:
+                query = query.filter(Transactions.date >= start_date)
+            if end_date:
+                query = query.filter(Transactions.date <= end_date)
 
-        # return query.all()
-        results = query.all()
+            products = query.all()
 
-        # Convert results to list of dictionaries
-        return [
-            {
-                "date": row[0].strftime("%Y-%m-%d"),
-                "total_sales": row[1],
-                "total_revenue": row[2],
-            }
-            for row in results
-        ]
+            return [
+                {
+                    "date": product[0].strftime("%Y-%m-%d"),
+                    "total_sales": product[1],
+                    "total_revenue": product[2],
+                }
+                for product in products
+            ]
+        except SQLAlchemyError as e:
+            return {"error": f"Error fetching total sales by day: {str(e)}"}
 
     @staticmethod
     def get_category_metrics(db: Session):
-        """Obtiene métricas de cada categoría"""
-        return db.query(CategoryMetrics).all()
+        try:
+            return db.query(CategoryMetrics).all()
+        except SQLAlchemyError as e:
+            return {"error": f"Error fetching category metrics: {str(e)}"}
+
+    @staticmethod
+    def get_outliers(db: Session):
+        try:
+            return db.query(Outliers).all()
+        except SQLAlchemyError as e:
+            return {"error": f"Error fetching outliers: {str(e)}"}
