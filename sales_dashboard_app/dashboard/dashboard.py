@@ -1,49 +1,62 @@
-# import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
-# import dash_bootstrap_components as dbc
-# import pandas as pd
-# import requests
+import streamlit as st
+import requests
+import pandas as pd
 
-# #  Url where de project are located
-# API_URL = "http://127.0.0.1:8000"
+API_URL = "http://127.0.0.1:8000"
 
-# app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+st.title("Sales Dashboard")
 
-# def sales_dashboard_data():
-#     response = requests.get(f"{API_URL}/sales/day")
-#     if response.status_code == 200:
-#         return pd.DataFrame(response.json())
-#     return pd.DataFrame()
+# Obtain sales by product
+st.header("Sales by Product")
+product = st.text_input("Filter by product (optional)")
+category = st.text_input("Filter by category (optional)")
 
-# app.layout = dbc.Container([
-#     html.H1("Sales Dashboard"),
-    
-#     html.Label("filter by date:"),
-#     dcc.DatePickerRange(
-#         id="date_picker",
-#         start_date="2024-01-01",
-#         end_date="2024-12-31",
-#     ),
+params = {}
+if product:
+    params["product"] = product
+if category:
+    params["category"] = category
 
-#     dcc.Graph(id="sales_graph")
-# ])
+response = requests.get(f"{API_URL}/sales/product", params=params)
+if response.status_code == 200:
+    data = response.json()
+    df = pd.DataFrame(data)
+    st.dataframe(df)
+else:
+    st.error("Error")
 
-# @app.callback(
-#     dash.dependencies.Output("sales_graph", "figure"),
-#     [dash.dependencies.Input("date_picker", "start_date"),
-#      dash.dependencies.Input("date_picker", "end_date")]
-# )
-# def update_graph(start_date, end_date):
-#     response = requests.get(f"{API_URL}/sales/day", params={"start_date": start_date, "end_date": end_date})
-#     if response.status_code == 200:
-#         data = pd.DataFrame(response.json())
-#         figure = {
-#             "data": [{"x": data["date"], "y": data["total_sales"], "type": "line", "name": "Ventas"}],
-#             "layout": {"title": "sales per day"}
-#         }
-#         return figure
-#     return {}
+# Obtain sales per day
+st.header("Sales per day")
+start_date = st.date_input("Start Date", value=pd.to_datetime("2024-01-01"))
+end_date = st.date_input("End Date", value=pd.to_datetime("2024-12-31"))
 
-# if __name__ == "__main__":
-#     app.run_server(debug=True)
+response = requests.get(
+    f"{API_URL}/sales/day", params={"start_date": start_date, "end_date": end_date}
+)
+if response.status_code == 200:
+    data = response.json()
+    df = pd.DataFrame(data)
+    st.line_chart(df.set_index("date"))
+else:
+    st.error("Error")
+
+# Obtain sales by category
+st.header("Sales by Category")
+
+response = requests.get(f"{API_URL}/sales/category")
+if response.status_code == 200:
+    df_category = pd.DataFrame(response.json())
+    st.bar_chart(df_category.set_index("day_with_highest_sales"))
+else:
+    st.error("Error")
+
+# Obtain sales by outliers
+st.header("Outliers in Sales")
+
+response = requests.get(f"{API_URL}/sales/outliers")
+if response.status_code == 200:
+    df_outliers = pd.DataFrame(response.json())
+    st.line_chart(df_outliers.set_index("quantity"))
+    st.dataframe(df_outliers)
+else:
+    st.error("Error")

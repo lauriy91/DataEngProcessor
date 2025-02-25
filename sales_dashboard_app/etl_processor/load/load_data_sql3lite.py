@@ -16,23 +16,18 @@ conn = sqlite3.connect(DB_FILE)
 df.to_pandas().to_sql("transactions", conn, if_exists="replace", index=False)
 
 # Save category metrics db data from the transform complex script file
-category_metrics = df.select([
-    "category", 
-    "average_price", 
-    "total_revenue", 
-    "day_with_highest_sales"
-]).unique()
+category_metrics = df.select(
+    ["category", "average_price", "total_revenue", "day_with_highest_sales"]
+).unique()
 
-category_metrics.to_pandas().to_sql("category_metrics", conn, if_exists="replace", index=False)
+category_metrics.to_pandas().to_sql(
+    "category_metrics", conn, if_exists="replace", index=False
+)
 
 # Save outliers db data from the transform complex script file
-outliers = df.filter(pl.col("outlier_flag")).select([
-    "category",
-    "quantity",
-    "mean_quantity",
-    "outliers_std_deviations",
-    "outlier_flag"
-])
+outliers = df.filter(pl.col("outlier_flag")).select(
+    ["category", "quantity", "mean_quantity", "outliers_std_deviations", "outlier_flag"]
+)
 
 outliers.to_pandas().to_sql("outliers", conn, if_exists="replace", index=False)
 

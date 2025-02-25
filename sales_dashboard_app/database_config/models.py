@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from database_config.connection import Base
 
+
 class Transactions(Base):
     __tablename__ = "transactions"
 
@@ -20,6 +21,7 @@ class Transactions(Base):
     outliers_std_deviations = Column(Float)
     outlier_flag = Column(Boolean)
 
+
 class Outliers(Base):
     __tablename__ = "outliers"
 
@@ -29,6 +31,7 @@ class Outliers(Base):
     mean_quantity = Column(Float)
     outliers_std_deviations = Column(Float)
     outlier_flag = Column(Boolean)
+
 
 class CategoryMetrics(Base):
     __tablename__ = "category_metrics"
