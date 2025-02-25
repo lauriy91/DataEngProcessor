@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import date
-from database_config.models import Transactions
+from database_config.models import Transactions, CategoryMetrics
 
 
 class SalesDashboardService:
@@ -61,3 +61,8 @@ class SalesDashboardService:
             }
             for row in results
         ]
+
+    @staticmethod
+    def get_category_metrics(db: Session):
+        """Obtiene métricas de cada categoría"""
+        return db.query(CategoryMetrics).all()

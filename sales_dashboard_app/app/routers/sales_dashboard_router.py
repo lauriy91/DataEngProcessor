@@ -24,3 +24,7 @@ def get_total_sales_by_day(
     db: Session = Depends(get_db),
 ):
     return SalesDashboardService.get_total_sales_by_day(db, start_date, end_date)
+
+@router.get("/category")
+def get_category_metrics_sales(db: Session = Depends(get_db)):
+    return SalesDashboardService.get_category_metrics(db)
