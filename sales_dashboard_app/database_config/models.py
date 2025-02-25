@@ -1,33 +1,40 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, Date
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from database_config.connection import Base
 
-class Transaction(Base):
+class Transactions(Base):
     __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, nullable=False)
-    category = Column(String, nullable=False)
-    product = Column(String, nullable=False)
-    quantity = Column(Integer, default=0)
-    price = Column(Float, nullable=False)
+    transaction_id = Column(Integer, primary_key=True, index=True)
+    date = Column(DateTime, index=True)
+    category = Column(String, index=True)
+    product = Column(String, index=True)
+    quantity = Column(Integer)
+    price = Column(Float)
     total_sales = Column(Float)
     day_of_week = Column(String)
-    high_volume = Column(Boolean, default=False)
-
-class AggregatedMetricsByCategory(Base):
-    __tablename__ = "aggregated_metrics"
-
-    id = Column(Integer, primary_key=True, index=True)
-    category = Column(String, nullable=False)
-    avg_price = Column(Float)
+    high_volume = Column(Boolean)
+    average_price = Column(Float)
     total_revenue = Column(Float)
-    best_sales_day = Column(String)
+    day_with_highest_sales = Column(String)
+    mean_quantity = Column(Float)
+    outliers_std_deviations = Column(Float)
+    outlier_flag = Column(Boolean)
 
-class Outlier(Base):
+class Outliers(Base):
     __tablename__ = "outliers"
 
     id = Column(Integer, primary_key=True, index=True)
-    transaction_id = Column(Integer, nullable=False)
-    category = Column(String, nullable=False)
-    quantity = Column(Integer, nullable=False)
-    outlier_flag = Column(Boolean, default=True)
+    category = Column(String, index=True)
+    quantity = Column(Integer)
+    mean_quantity = Column(Float)
+    outliers_std_deviations = Column(Float)
+    outlier_flag = Column(Boolean)
+
+class CategoryMetrics(Base):
+    __tablename__ = "category_metrics"
+
+    id = Column(Integer, primary_key=True, index=True)
+    category = Column(String, index=True)
+    average_price = Column(Float)
+    total_revenue = Column(Float)
+    day_with_highest_sales = Column(String)
