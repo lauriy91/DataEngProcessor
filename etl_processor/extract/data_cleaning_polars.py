@@ -22,7 +22,7 @@ df = df.with_columns(
 # Save the cleaned file
 df = df.drop("median")
 df = df.filter(~(pl.col("quantity").eq(0) & pl.col("price").is_null()))
-data_cleaned = "transformed_data.csv"
+data_cleaned = "cleaned_data.csv"
 df.write_csv(f"etl_processor/data/{data_cleaned}")
 
 print(f"data cleaned and saved as: {data_cleaned}")
